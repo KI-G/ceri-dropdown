@@ -17,12 +17,12 @@ npm install --save-dev ceri-dropdown
 window.customElements.define("ceri-dropdown", require("ceri-dropdown"))
 ```
 ```html
-// as sibling (preferred)
+<!-- as sibling (preferred) -->
 <button>Click to open dropdown</button>
 <ceri-dropdown>
   <li><span>Line 1</span></li>
 </ceri-dropdown>
-// as child
+<!-- as child -->
 <button>Click to open dropdown
   <ceri-dropdown>
     <li><span>Line 1</span></li>
