@@ -99,14 +99,20 @@ module.exports = createView
     constrainWidthText: -> "constrainWidth: #{@constrainWidth}"
   tests: (env) ->
 
-    clickNWait = (el,cb) ->
+    clickNWait = (name,cb) ->
       e = new MouseEvent("click",{
         "view": window,
         "bubbles": true,
         "cancelable": true
       })
-      el.dispatchEvent(e)
-      setTimeout cb,300
+      btn = env[name]
+      btn.dispatchEvent(e)
+      dd = env[name+"dd"]
+      setTimeout (->
+        dd.animation.toEnd()
+        requestAnimationFrame -> requestAnimationFrame cb.bind(null,dd,btn), 10
+      ),0
+      
 
     roundBox = (box) ->
       left: Math.round(box.left)
@@ -117,13 +123,11 @@ module.exports = createView
       height: Math.round(box.height)
 
     getBoundingBoxes = (name,cb) ->
-      btn = env[name]
-      clickNWait btn, ->
-        dd = env[name+"dd"]
+      clickNWait name, (dd, btn) ->
         dd.open.should.be.true
         box1 = btn.getBoundingClientRect()
         box2 = dd.getBoundingClientRect()
-        clickNWait btn, ->
+        clickNWait name, ->
           dd.open.should.be.false
           cb(roundBox(box1),roundBox(box2))
     startCond = (obj, cb) ->
