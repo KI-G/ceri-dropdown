@@ -31,27 +31,26 @@ module.exports = ceri
       type: Boolean
 
   data: ->
-    active: false
     position: 
       top: null
       left: null
 
   events:
     popstate:
-      active: -> @active and @onBody
+      active: -> @openingOrOpen and @onBody
       cbs: -> @hide(false)
     mouseover:
       el: "target"
-      active: -> @hover and !@active
+      active: -> @hover and !@openingOrOpen
       cbs: "show"
       destroy: true
     mouseleave:
-      active: -> @hover and @active
+      active: -> @hover and @openingOrOpen
       cbs: "hide"
 
     click:
       target:
-        active: -> !@hover and !@active
+        active: -> !@hover and !@openingOrOpen
         notPrevented: true
         prevent: true
         cbs: "show"
@@ -64,7 +63,7 @@ module.exports = ceri
         el: document.documentElement
         outside: true
         cbs: "hide"
-        active: "active"
+        active: "openingOrOpen"
         delay: true
         destroy: true
     
@@ -73,14 +72,13 @@ module.exports = ceri
       notPrevented: true
       destroy: true
       keyCode: [27]
-      active: "active"
+      active: "openingOrOpen"
       cbs: "hide"
-      
+  initStyle:
+    position: "absolute"
+    display: "block"
   styles:
     this:
-      data: ->
-        position: "absolute"
-        display: "block"
       computed: ->
         width: [@width,"px"]
         boxSizing: if @width then "border-box" else null
@@ -134,37 +132,7 @@ module.exports = ceri
         o.style.top = [@position.top, @position.top+@offsetHeight, "px"]
       return @$animate(o)
 
-    show: (animate) ->
-      return if @open and not @closing
-      @active = true
-      unless @closing
-        if @onBody
-          document.body.appendChild @
-        @setOpen()
-        @getPosition()
-      else
-        @closing = false
-      @animation = @enter @$cancelAnimation @animation, animate: animate
-
-    hide: (animate) ->
-      return unless @open
-      @active = false
-      @closing = true
-      @animation = @leave @$cancelAnimation @animation,
-        animate: animate
-        done: -> 
-          @closing = false
-          @setClose()
-          if @onBody
-            @remove()
-
-    toggle: (animate) ->
-      if @open
-        @hide(animate)
-      else
-        @show(animate)
-
-    getPosition: ->
+    beforeShow: ->
       targetPos = @target.getBoundingClientRect()
       windowSize = @getViewportSize()
 
@@ -203,5 +171,4 @@ module.exports = ceri
           top += @target.offsetTop
           left += @target.offsetLeft
       @position = top: top, left: left, asTop: asTop 
-
   

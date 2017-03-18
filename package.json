@@ -20,6 +20,7 @@
     "ceri": "^1.0.3"
   },
   "devDependencies": {
+    "ceri-materialize": "^1.0.0",
     "ceri-compiler": "^1.0.0",
     "ceri-dev-server": "^1.0.0",
     "coffee-loader": "^0.7.2",
