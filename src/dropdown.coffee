@@ -190,7 +190,7 @@ module.exports = ceri
         left -= @totalWidth - @target.offsetWidth
 
       if @onBody
-        scroll = @getScrollPos
+        scroll = @getScrollPos()
         top += scroll.top + targetPos.top
         left += scroll.left + targetPos.left
       else
