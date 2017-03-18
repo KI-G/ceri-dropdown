@@ -10,6 +10,7 @@ module.exports = ceri
     require "ceri/lib/open"
     require "ceri/lib/getViewportSize"
     require "ceri/lib/@popstate"
+    require "ceri/lib/getScrollPos"
   ]
 
   props:
@@ -189,14 +190,16 @@ module.exports = ceri
         left -= @totalWidth - @target.offsetWidth
 
       if @onBody
-        body = document.body
-        docEl = document.documentElement
-        scrollTop = window.pageYOffset || docEl.scrollTop || body.scrollTop
-        scrollLeft = window.pageXOffset || docEl.scrollLeft || body.scrollLeft
-        top += scrollTop + targetPos.top
-        left += scrollLeft + targetPos.left
+        scroll = @getScrollPos
+        top += scroll.top + targetPos.top
+        left += scroll.left + targetPos.left
       else
-        if @parentElement != @target or not /relative|absolute|fixed/.test(getComputedStyle(@parentElement).getPropertyValue("position"))
+        parentStyle = getComputedStyle(@parentElement)
+        isPositioned = /relative|absolute|fixed/.test(parentStyle.getPropertyValue("position"))
+        if @parentElement == @target and isPositioned
+          left -= parseInt(parentStyle.getPropertyValue("border-left-width").replace("px",""))
+          top -= parseInt(parentStyle.getPropertyValue("border-top-width").replace("px",""))
+        else
           top += @target.offsetTop
           left += @target.offsetLeft
       @position = top: top, left: left, asTop: asTop 

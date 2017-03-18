@@ -16,3 +16,9 @@ module.exports = createView
       <li><span>Content2</span></li>
       </ceri-dropdown>
 """
+  tests: (env) ->
+    describe "dropdown", ->
+      describe "materialize", ->
+        after: ->
+          env.remove()
+        it "works", ->
