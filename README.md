@@ -64,34 +64,10 @@ There are two ways of positioning. The default is in-place, the other possibilit
 </ceri-dropdown>
 ```
 
-#### Animation
-Make sure to read the documentation of the [animate mixin](https://github.com/cerijs/ceri#animate).
-This is the default animation:
-```coffee
-enter: (o) ->
-  o.preserve = ["overflow","height"]
-  o.init = overflow: "hidden"
-  o.style = 
-    height: [0,@offsetHeight, "px"]
-    opacity: [0,1]
-  if @position.asTop
-    o.init.top = @position.top + "px"
-  else
-    o.style.top = [@position.top+@offsetHeight,@position.top, "px"]
-  return @$animate(o)
-
-leave: (o) ->
-  o.preserve = ["overflow","height"]
-  o.init = overflow: "hidden"
-  o.duration = 200
-  o.style =
-    height: [@offsetHeight,0, "px"]
-    opacity: [1,0]
-  unless @position.asTop
-    o.style.top = [@position.top, @position.top+@offsetHeight, "px"]
-  return @$animate(o)
-```
-You can provide a custom animation like this:
+#### Custom animation
+- read the documentation of the [animate mixin](https://github.com/cerijs/ceri#animate).
+- read and understand the default animation in [src/dropdown.coffee](src/dropdown.coffee)
+- you can provide a custom animation like this:
 ```coffee
 # application wide
 CEDD = require("ceri-dropdown")
