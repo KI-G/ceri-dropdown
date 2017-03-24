@@ -5,17 +5,13 @@ module.exports = ceri
     require "ceri/lib/props"
     require "ceri/lib/computed"
     require "ceri/lib/styles"
-    require "ceri/lib/events"
     require "ceri/lib/animate"
     require "ceri/lib/open"
     require "ceri/lib/getViewportSize"
-    require "ceri/lib/@popstate"
     require "ceri/lib/getScrollPos"
   ]
 
   props:
-    keepOpen:
-      type: Boolean
     constrainWidth:
       type: Boolean
     overlay:
@@ -36,9 +32,6 @@ module.exports = ceri
       left: null
 
   events:
-    popstate:
-      active: -> @openingOrOpen and @onBody
-      cbs: -> @hide(false)
     mouseover:
       el: "target"
       active: -> @hover and !@openingOrOpen
@@ -59,21 +52,7 @@ module.exports = ceri
         notPrevented: true
         prevent: true
         cbs: "hide"
-      outside: 
-        el: document.documentElement
-        outside: true
-        cbs: "hide"
-        active: "openingOrOpen"
-        delay: true
-        destroy: true
-    
-    keyup:
-      el:document.documentElement
-      notPrevented: true
-      destroy: true
-      keyCode: [27]
-      active: "openingOrOpen"
-      cbs: "hide"
+      
   initStyle:
     position: "absolute"
     display: "block"
@@ -90,10 +69,10 @@ module.exports = ceri
       return "nw" if @overlay
       return "sw"
     target: ->
-        if @__placeholder.previousElementSibling
-          return @__placeholder.previousElementSibling
-        else
-          return @__parentElement
+      if @__placeholder.previousElementSibling
+        return @__placeholder.previousElementSibling
+      else
+        return @__parentElement
     totalWidth: ->
       if @constrainWidth
         return @target.offsetWidth-@gutter
@@ -132,7 +111,7 @@ module.exports = ceri
         o.style.top = [@position.top, @position.top+@offsetHeight, "px"]
       return @$animate(o)
 
-    beforeShow: ->
+    onShow: ->
       targetPos = @target.getBoundingClientRect()
       windowSize = @getViewportSize()
 
