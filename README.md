@@ -73,7 +73,7 @@ There are two ways of positioning. The default is in-place, the other possibilit
 
 #### Custom animation
 - read the documentation of the [animate mixin](https://github.com/cerijs/ceri#animate).
-- read and understand the default animation in [src/dropdown.coffee](src/dropdown.coffee)
+- read and understand the default enter and leave animation in [src/dropdown.coffee](src/dropdown.coffee)
 - you can provide a custom animation like this:
 ```coffee
 # application wide
@@ -81,6 +81,7 @@ CEDD = require("ceri-dropdown")
 CEDD.prototype.enter = (o) -> # your new enter animation
 CEDD.prototype.leave = (o) -> # your new leave animation
 window.customElements.define("ceri-dropdown", CEDD)
+
 # single instance
 # get a ref to your instance of ceri-dropdown somehow
 # then overwrite the animations directly

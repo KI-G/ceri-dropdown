@@ -4,7 +4,7 @@ module.exports = ceri
   mixins: [
     require "ceri/lib/props"
     require "ceri/lib/computed"
-    require "ceri/lib/styles"
+    require "ceri/lib/style"
     require "ceri/lib/animate"
     require "ceri/lib/open"
     require "ceri/lib/getViewportSize"
@@ -38,8 +38,10 @@ module.exports = ceri
       cbs: "show"
       destroy: true
     mouseleave:
-      active: -> @hover and @openingOrOpen
+      el: "target"
+      active: -> @hover
       cbs: "hide"
+      destroy: true
 
     click:
       target:
@@ -56,12 +58,10 @@ module.exports = ceri
   initStyle:
     position: "absolute"
     display: "block"
-  styles:
-    this:
-      computed: ->
-        width: [@width,"px"]
-        boxSizing: if @width then "border-box" else null
-        left: [@position.left,"px"]
+  computedStyle: ->
+    width: [@width,"px"]
+    boxSizing: if @width then "border-box" else null
+    left: [@position.left,"px"]
 
   computed:
     cAnchor: ->
@@ -144,8 +144,8 @@ module.exports = ceri
         parentStyle = getComputedStyle(@parentElement)
         isPositioned = /relative|absolute|fixed/.test(parentStyle.getPropertyValue("position"))
         if @parentElement == @target and isPositioned
-          left -= parseInt(parentStyle.getPropertyValue("border-left-width").replace("px",""))
-          top -= parseInt(parentStyle.getPropertyValue("border-top-width").replace("px",""))
+          left -= parseInt(parentStyle.getPropertyValue("border-left-width"))
+          top -= parseInt(parentStyle.getPropertyValue("border-top-width"))
         else
           top += @target.offsetTop
           left += @target.offsetLeft
