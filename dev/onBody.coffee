@@ -19,9 +19,7 @@ module.exports = createView
     @style.display = "block"
     @style.overflowY = "scroll"
     @style.height = "250px"
-  tests: (env) ->
-    describe "dropdown", ->
-      describe "onBody", ->
-        after: ->
-          env.remove()
-        it "works", ->
+  tests: dropdown: ->
+    describe "onBody", ->
+      it "works", =>
+        should.exist @

@@ -97,25 +97,25 @@ module.exports = createView
   computed:
     overlayText: -> "overlay: #{@overlay}"
     constrainWidthText: -> "constrainWidth: #{@constrainWidth}"
-  tests: (env) ->
+  tests: dropdown: ->
 
-    clickNWait = (name,cb) ->
+    clickNWait = (name,cb) =>
       e = new MouseEvent("click",{
         "view": window,
         "bubbles": true,
         "cancelable": true
       })
-      btn = env[name]
+      btn = @[name]
       btn.dispatchEvent(e)
-      dd = env[name+"dd"]
-      setTimeout (->
+      dd = @[name+"dd"]
+      setTimeout (=>
         dd.animation.toEnd()
-        requestAnimationFrame -> requestAnimationFrame -> 
+        requestAnimationFrame => requestAnimationFrame => 
           requestAnimationFrame cb.bind(null,dd,btn)
       ),10
       
 
-    roundBox = (box) ->
+    roundBox = (box) =>
       left: Math.round(box.left)
       right: Math.round(box.right)
       top: Math.round(box.top)
@@ -123,131 +123,125 @@ module.exports = createView
       width: Math.round(box.width)
       height: Math.round(box.height)
 
-    getBoundingBoxes = (name,cb) ->
-      clickNWait name, (dd, btn) ->
+    getBoundingBoxes = (name,cb) =>
+      clickNWait name, (dd, btn) =>
         dd.open.should.be.true
         box1 = btn.getBoundingClientRect()
         box2 = dd.getBoundingClientRect()
-        clickNWait name, ->
+        clickNWait name, =>
           dd.open.should.be.false
           cb(roundBox(box1),roundBox(box2))
-    startCond = (obj, cb) ->
+    startCond = (obj, cb) =>
       obj ?= {}
       obj.gutter ?= 0
-      env.overlay = obj.overlay
-      env.gutter = obj.gutter
+      @overlay = obj.overlay
+      @gutter = obj.gutter
       if cb?
-        env.$nextTick cb
-    describe "dropdown", ->
+        @$nextTick cb
+    describe "basic env", =>
 
-      describe "basic env", ->
-
-        describe "floating", ->
-          it "should work for left", (done) ->
-            startCond {}, ->
-              getBoundingBoxes "floatleft", (box1,box2) ->
-                box2.left.should.equal box1.left, "floatleft-left"
-                box2.top.should.equal box1.bottom, "floatleft-top"
-                done()
-          it "should work for right", (done) ->
-            startCond {}, ->
-              getBoundingBoxes "floatright", (box1,box2) ->
+      describe "floating", =>
+        it "should work for left", (done) =>
+          startCond {}, =>
+            getBoundingBoxes "floatleft", (box1,box2) =>
+              box2.left.should.equal box1.left, "floatleft-left"
+              box2.top.should.equal box1.bottom, "floatleft-top"
+              done()
+        it "should work for right", (done) =>
+          startCond {}, =>
+            getBoundingBoxes "floatright", (box1,box2) =>
+              #box2.right.should.equal box1.right, "floatright-right"
+              box2.top.should.equal box1.bottom, "floatright-top"
+              done()
+        it "should work with overlay", (done) =>
+          startCond overlay:true, =>
+            getBoundingBoxes "floatleft", (box1,box2) =>
+              box2.left.should.equal box1.left, "floatleft-left"
+              box2.top.should.equal box1.top, "floatleft-top"
+              getBoundingBoxes "floatright", (box1,box2) =>
                 #box2.right.should.equal box1.right, "floatright-right"
+                box2.top.should.equal box1.top, "floatright-top"
+                done()
+        it "should work with gutter", (done) =>
+          startCond gutter:20, =>
+            getBoundingBoxes "floatleft", (box1,box2) =>
+              box2.left.should.equal box1.left+@gutter, "floatleft-left"
+              box2.top.should.equal box1.bottom, "floatleft-top"
+              getBoundingBoxes "floatright", (box1,box2) =>
+                box2.right.should.equal box1.right-@gutter, "floatright-right"
                 box2.top.should.equal box1.bottom, "floatright-top"
                 done()
-          it "should work with overlay", (done) ->
-            startCond overlay:true, ->
-              getBoundingBoxes "floatleft", (box1,box2) ->
-                box2.left.should.equal box1.left, "floatleft-left"
-                box2.top.should.equal box1.top, "floatleft-top"
-                getBoundingBoxes "floatright", (box1,box2) ->
-                  #box2.right.should.equal box1.right, "floatright-right"
-                  box2.top.should.equal box1.top, "floatright-top"
-                  done()
-          it "should work with gutter", (done) ->
-            startCond gutter:20, ->
-              getBoundingBoxes "floatleft", (box1,box2) ->
-                box2.left.should.equal box1.left+env.gutter, "floatleft-left"
-                box2.top.should.equal box1.bottom, "floatleft-top"
-                getBoundingBoxes "floatright", (box1,box2) ->
-                  box2.right.should.equal box1.right-env.gutter, "floatright-right"
-                  box2.top.should.equal box1.bottom, "floatright-top"
-                  done()
-          it "should work with overlay and gutter", (done) ->
-            startCond gutter:20,overlay:true, ->
-              getBoundingBoxes "floatleft", (box1,box2) ->
-                box2.left.should.equal box1.left+env.gutter, "floatleft-left"
-                box2.top.should.equal box1.top, "floatleft-top"
-                getBoundingBoxes "floatright", (box1,box2) ->
-                  box2.right.should.equal box1.right-env.gutter, "floatright-right"
-                  box2.top.should.equal box1.top, "floatright-top"
-                  done()
+        it "should work with overlay and gutter", (done) =>
+          startCond gutter:20,overlay:true, =>
+            getBoundingBoxes "floatleft", (box1,box2) =>
+              box2.left.should.equal box1.left+@gutter, "floatleft-left"
+              box2.top.should.equal box1.top, "floatleft-top"
+              getBoundingBoxes "floatright", (box1,box2) =>
+                box2.right.should.equal box1.right-@gutter, "floatright-right"
+                box2.top.should.equal box1.top, "floatright-top"
+                done()
 
-        describe "anchor", ->
-          it "should work for all anchors", (done) ->
-            @timeout(5000)
-            startCond {}, ->
-              getBoundingBoxes "nw", (box1,box2) ->
-                box2.left.should.equal box1.left, "nw-left"
-                box2.bottom.should.equal box1.top, "nw-bottom"
-                getBoundingBoxes "ne", (box1,box2) ->
-                  box2.right.should.equal box1.right, "ne-right"
-                  box2.bottom.should.equal box1.top, "ne-bottom"
-                  getBoundingBoxes "sw", (box1,box2) ->
-                    box2.left.should.equal box1.left, "sw-left"
-                    box2.top.should.equal box1.bottom, "sw-top"
-                    getBoundingBoxes "se", (box1,box2) ->
-                      box2.right.should.equal box1.right, "se-right"
-                      box2.top.should.equal box1.bottom, "se-top"
-                      done()
-          it "should work with overlay", (done) ->
-            @timeout(5000)
-            startCond overlay:true, ->
-              getBoundingBoxes "nw", (box1,box2) ->
-                box2.left.should.equal box1.left, "nw-left"
-                box2.top.should.equal box1.top, "nw-top"
-                getBoundingBoxes "ne", (box1,box2) ->
-                  box2.right.should.equal box1.right, "ne-right"
-                  box2.top.should.equal box1.top, "ne-top"
-                  getBoundingBoxes "sw", (box1,box2) ->
-                    box2.left.should.equal box1.left, "sw-left"
-                    box2.bottom.should.equal box1.bottom, "sw-bottom"
-                    getBoundingBoxes "se", (box1,box2) ->
-                      box2.right.should.equal box1.right, "se-right"
-                      box2.bottom.should.equal box1.bottom, "se-bottom"
-                      done()
-          it "should work with gutter", (done) ->
-            @timeout(5000)
-            startCond gutter:20, ->
-              getBoundingBoxes "nw", (box1,box2) ->
-                box2.left.should.equal box1.left+env.gutter, "nw-left"
-                box2.bottom.should.equal box1.top, "nw-bottom"
-                getBoundingBoxes "ne", (box1,box2) ->
-                  box2.right.should.equal box1.right-env.gutter, "ne-right"
-                  box2.bottom.should.equal box1.top, "ne-bottom"
-                  getBoundingBoxes "sw", (box1,box2) ->
-                    box2.left.should.equal box1.left+env.gutter, "sw-left"
-                    box2.top.should.equal box1.bottom, "sw-top"
-                    getBoundingBoxes "se", (box1,box2) ->
-                      box2.right.should.equal box1.right-env.gutter, "se-right"
-                      box2.top.should.equal box1.bottom, "se-top"
-                      done()
-          it "should work with overlay and gutter", (done) ->
-            @timeout(5000)
-            startCond gutter:20,overlay:true, ->
-              getBoundingBoxes "nw", (box1,box2) ->
-                box2.left.should.equal box1.left+env.gutter, "nw-left"
-                box2.top.should.equal box1.top, "nw-top"
-                getBoundingBoxes "ne", (box1,box2) ->
-                  box2.right.should.equal box1.right-env.gutter, "ne-right"
-                  box2.top.should.equal box1.top, "ne-top"
-                  getBoundingBoxes "sw", (box1,box2) ->
-                    box2.left.should.equal box1.left+env.gutter, "sw-left"
-                    box2.bottom.should.equal box1.bottom, "sw-bottom"
-                    getBoundingBoxes "se", (box1,box2) ->
-                      box2.right.should.equal box1.right-env.gutter, "se-right"
-                      box2.bottom.should.equal box1.bottom, "se-bottom"
-                      done()
+      describe "anchor", =>
+        it "should work for all anchors", (done) =>
+          startCond {}, =>
+            getBoundingBoxes "nw", (box1,box2) =>
+              box2.left.should.equal box1.left, "nw-left"
+              box2.bottom.should.equal box1.top, "nw-bottom"
+              getBoundingBoxes "ne", (box1,box2) =>
+                box2.right.should.equal box1.right, "ne-right"
+                box2.bottom.should.equal box1.top, "ne-bottom"
+                getBoundingBoxes "sw", (box1,box2) =>
+                  box2.left.should.equal box1.left, "sw-left"
+                  box2.top.should.equal box1.bottom, "sw-top"
+                  getBoundingBoxes "se", (box1,box2) =>
+                    box2.right.should.equal box1.right, "se-right"
+                    box2.top.should.equal box1.bottom, "se-top"
+                    done()
+        it "should work with overlay", (done) =>
+          startCond overlay:true, =>
+            getBoundingBoxes "nw", (box1,box2) =>
+              box2.left.should.equal box1.left, "nw-left"
+              box2.top.should.equal box1.top, "nw-top"
+              getBoundingBoxes "ne", (box1,box2) =>
+                box2.right.should.equal box1.right, "ne-right"
+                box2.top.should.equal box1.top, "ne-top"
+                getBoundingBoxes "sw", (box1,box2) =>
+                  box2.left.should.equal box1.left, "sw-left"
+                  box2.bottom.should.equal box1.bottom, "sw-bottom"
+                  getBoundingBoxes "se", (box1,box2) =>
+                    box2.right.should.equal box1.right, "se-right"
+                    box2.bottom.should.equal box1.bottom, "se-bottom"
+                    done()
+        it "should work with gutter", (done) =>
+          startCond gutter:20, =>
+            getBoundingBoxes "nw", (box1,box2) =>
+              box2.left.should.equal box1.left+@gutter, "nw-left"
+              box2.bottom.should.equal box1.top, "nw-bottom"
+              getBoundingBoxes "ne", (box1,box2) =>
+                box2.right.should.equal box1.right-@gutter, "ne-right"
+                box2.bottom.should.equal box1.top, "ne-bottom"
+                getBoundingBoxes "sw", (box1,box2) =>
+                  box2.left.should.equal box1.left+@gutter, "sw-left"
+                  box2.top.should.equal box1.bottom, "sw-top"
+                  getBoundingBoxes "se", (box1,box2) =>
+                    box2.right.should.equal box1.right-@gutter, "se-right"
+                    box2.top.should.equal box1.bottom, "se-top"
+                    done()
+        it "should work with overlay and gutter", (done) =>
+          startCond gutter:20,overlay:true, =>
+            getBoundingBoxes "nw", (box1,box2) =>
+              box2.left.should.equal box1.left+@gutter, "nw-left"
+              box2.top.should.equal box1.top, "nw-top"
+              getBoundingBoxes "ne", (box1,box2) =>
+                box2.right.should.equal box1.right-@gutter, "ne-right"
+                box2.top.should.equal box1.top, "ne-top"
+                getBoundingBoxes "sw", (box1,box2) =>
+                  box2.left.should.equal box1.left+@gutter, "sw-left"
+                  box2.bottom.should.equal box1.bottom, "sw-bottom"
+                  getBoundingBoxes "se", (box1,box2) =>
+                    box2.right.should.equal box1.right-@gutter, "se-right"
+                    box2.bottom.should.equal box1.bottom, "se-bottom"
+                    done()
 
         # describe "absolute positioned", ->
         #   it "should work for all", (done) ->
@@ -286,31 +280,31 @@ module.exports = createView
         #     @timeout(5000)
         #     startCond gutter:20, ->
         #       getBoundingBoxes "topleft", (box1,box2) ->
-        #         box2.left.should.equal box1.left+env.gutter, "topleft-left"
+        #         box2.left.should.equal box1.left+@gutter, "topleft-left"
         #         box2.top.should.equal box1.bottom, "topleft-top"
         #         getBoundingBoxes "topright", (box1,box2) ->
-        #           box2.right.should.equal box1.right-env.gutter, "topright-right"
+        #           box2.right.should.equal box1.right-@gutter, "topright-right"
         #           box2.top.should.equal box1.bottom, "topright-top"
         #           getBoundingBoxes "bottomleft", (box1,box2) ->
-        #             box2.left.should.equal box1.left+env.gutter, "bottomleft-left"
+        #             box2.left.should.equal box1.left+@gutter, "bottomleft-left"
         #             box2.bottom.should.equal box1.top, "bottomleft-bottom"
         #             getBoundingBoxes "bottomright", (box1,box2) ->
-        #               box2.right.should.equal box1.right-env.gutter, "bottomright-right"
+        #               box2.right.should.equal box1.right-@gutter, "bottomright-right"
         #               box2.bottom.should.equal box1.top, "bottomright-bottom"
         #               done()
         #   it "should work with both", (done) ->
         #     @timeout(5000)
         #     startCond overlay:true,gutter:20, ->
         #       getBoundingBoxes "topleft", (box1,box2) ->
-        #         box2.left.should.equal box1.left+env.gutter, "topleft-left"
+        #         box2.left.should.equal box1.left+@gutter, "topleft-left"
         #         box2.top.should.equal box1.top, "topleft-top"
         #         getBoundingBoxes "topright", (box1,box2) ->
-        #           box2.right.should.equal box1.right-env.gutter, "topright-right"
+        #           box2.right.should.equal box1.right-@gutter, "topright-right"
         #           box2.top.should.equal box1.top, "topright-top"
         #           getBoundingBoxes "bottomleft", (box1,box2) ->
-        #             box2.left.should.equal box1.left+env.gutter, "bottomleft-left"
+        #             box2.left.should.equal box1.left+@gutter, "bottomleft-left"
         #             box2.bottom.should.equal box1.bottom, "bottomleft-bottom"
         #             getBoundingBoxes "bottomright", (box1,box2) ->
-        #               box2.right.should.equal box1.right-env.gutter, "bottomright-right"
+        #               box2.right.should.equal box1.right-@gutter, "bottomright-right"
         #               box2.bottom.should.equal box1.bottom, "bottomright-bottom"
         #               done()

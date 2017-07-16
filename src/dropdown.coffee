@@ -58,10 +58,11 @@ module.exports = ceri
   initStyle:
     position: "absolute"
     display: "block"
-  computedStyle: ->
-    width: [@width,"px"]
-    boxSizing: if @width then "border-box" else null
-    left: [@position.left,"px"]
+  computedStyle: 
+    this: ->
+      width: [@width,"px"]
+      boxSizing: if @width then "border-box" else null
+      left: [@position.left,"px"]
 
   computed:
     cAnchor: ->
