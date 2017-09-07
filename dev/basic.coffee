@@ -1,4 +1,3 @@
-require "./basic.css"
 window.customElements.define "ceri-dropdown", require "../src/dropdown.coffee"
 createView = require "ceri-dev-server/lib/createView"
 module.exports = createView
