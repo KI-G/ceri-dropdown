@@ -4,7 +4,6 @@ a advanced dropdown/up/left/right menu.
 
 Features:
 - plain JS - no dependencies
-- 26kB unzipped with animations - even smaller when using multiple ceri components
 - themeable
 - use in your markup - easy to reason about
 - aware of the viewport - automatically changes opening direction to be visible
@@ -96,6 +95,10 @@ npm install
 npm run dev
 ```
 Browse to `http://localhost:8080/`.
+
+## Notable changes
+#### 0.2.0
+- use ceri-materialize@2
 
 ## License
 Copyright (c) 2017 Paul Pflugradt

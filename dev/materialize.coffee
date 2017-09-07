@@ -1,4 +1,4 @@
-require("./materialize.config.scss")
+require("./materialize.config.styl")
 createView = require "ceri-dev-server/lib/createView"
 module.exports = createView
 
